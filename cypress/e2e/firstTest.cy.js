@@ -7,7 +7,7 @@ describe('My First Test', () => {
   })
 
   it('clicking "type" navigates to a new url', () => {
-    cy.contains('next').click()
+    cy.contains('Next').click()
     cy.url().should('include', '/commands/traversal')
   })
 
