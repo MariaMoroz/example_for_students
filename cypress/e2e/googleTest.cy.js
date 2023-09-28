@@ -41,7 +41,7 @@ describe("Google table", () => {
     })  
   })
 
-  it.only("sort the table by lastname", () => {
+  it("sort the table by lastname", () => {
     cy.visit("https://the-internet.herokuapp.com/tables")
 
     cy.getArrayObjectsTable().then(actualTable => {
