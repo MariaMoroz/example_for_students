@@ -1,25 +1,62 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+const { _ } = Cypress
+
+Cypress.Commands.add("getActualTable", () => {
+    cy.get("#table1 tbody tr").then(($cells) => {
+      let table = Cypress._.map($cells, "innerText").map((row) =>
+        row.split("\t").filter((el) => el != "edit delete")
+      );
+      console.log("actualTable", table)
+      return table
+    })
+  })
+  
+  Cypress.Commands.add("getExpectedSortedTable", (table) => {
+    const expectedTable1 = Cypress._.sortBy(table)
+    return expectedTable1
+  })
+
+Cypress.Commands.add("getRowsArray", () => {
+  cy.get("#table1 tbody tr").then(($cells) => {
+    let table = Cypress._.map($cells, "innerText").map((row) => row.split("\t").filter(el => el != "edit delete"))
+
+    return table
+  })
+})
+
+Cypress.Commands.add("getArrayHeaders", () => {
+    cy.get("#table1 tr th:not(:last-child)").then(($h) => {
+      const headerArray = Array.from($h, h => h.innerText)
+    
+      return headerArray
+    })
+  })
+
+Cypress.Commands.add("getArrayObjectsTable", () => {
+    let tableObjects = []
+    
+    cy.getArrayHeaders().then(headersArray => {
+        cy.getRowsArray().then(arrayRows => {
+            arrayRows.forEach(row => {
+                let objectRow = {}
+                row.forEach((el, i) => {          
+                    if (headersArray[i] == 'Due') {
+                        el = el.replace('$', '')
+                        objectRow[headersArray[i]] = Number.parseFloat(el)
+                    } else {
+                        objectRow[headersArray[i]] = el
+                    }
+                })
+                tableObjects.push(objectRow) 
+            })
+            console.log('tableObjects', tableObjects)
+            return tableObjects 
+        })              
+    })                                       
+})
+
+Cypress.Commands.add("sortTable", (table, header) => {
+    const expectedTable1 = _.sortBy(table, header)
+    
+    return expectedTable1
+})
